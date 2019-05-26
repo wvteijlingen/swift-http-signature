@@ -77,7 +77,7 @@ struct Signature {
       signature = try CryptorRSA.createPlaintext(with: signingString, using: .utf8).signed(with: privateKey, algorithm: .sha512)!.base64String
     }
 
-    headerValue = [
+    signatureHeaderValue = [
       "keyId=\"\(keyID)\"",
       "algorithm=\"\(algorithm.name)\"",
       "headers=\"(request-target) \(headers.uniqueKeys(joinedBy: " ").lowercased())\"",

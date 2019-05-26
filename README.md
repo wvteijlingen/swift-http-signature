@@ -4,7 +4,7 @@ Generates signatures according to https://tools.ietf.org/html/draft-cavage-http-
 
 ## Usage
 
-Generate a signature as follows:
+Generate a signature as follows.
 
 ```swift
 // Create the signature
@@ -22,7 +22,8 @@ let signature = try! Signature(
   ]
 )
 
-signature.headerValue // Returns the value to put in the HTTP `Signature` header
+signature.signatureHeaderValue // Returns the value to put in the HTTP `Signature` header
+signature.authorizationHeaderValue // Returns the value to put in the HTTP `Authorization` header
 signature.signature // Returns just the generated signature
 ```
 
