@@ -28,22 +28,36 @@ struct Signature {
     }
   }
 
-  let headerValue: String
+  /// The signing string used to generate the signature.
   let signingString: String
+
+  /// The raw generated signature.
   let signature: String
 
-  #if canImport(Foundation)
-//    init(algorithm: Algorithm, keyID: String, request: URLRequest, headers: [String] = ["Date"]) throws {
-//      var keyValuePairs: KeyValuePairs<String, String> = [:]
-//      request.allHTTPHeaderFields?.filter { headers.contains($0.key) }.forEach { keyValuePairs[$0.key] = $0.value }
-//      try self.init(algorithm: algorithm, keyID: keyID, url: request.url!, method: request.httpMethod!, headers: keyValuePairs)
-//    }
+  /// The signature value to use in the HTTP `Signature` header.
+  let signatureHeaderValue: String
 
+  /// The signature value to use in the HTTP `Authorization` header.
+  var authorizationHeaderValue: String {
+    return "Signature \(signatureHeaderValue)"
+  }
+
+  #if canImport(Foundation)
     init(algorithm: Algorithm, keyID: String, url: URL, method: String, headers: KeyValuePairs<String, String>) throws {
       try self.init(algorithm: algorithm, keyID: keyID, path: url.path, method: method, headers: headers)
     }
   #endif
 
+  /// Instantiates a new signature.
+  /// See https://tools.ietf.org/html/draft-cavage-http-signatures-10#section-2.1 for descriptions of some of the parameters.
+  ///
+  /// - Parameters:
+  ///   - algorithm: The signature algorithm to use.
+  ///   - keyID: The key id to use.
+  ///   - path: The URL path of the request to sign. This should include query paramters.
+  ///   - method: The HTTP method of the request to sign.
+  ///   - headers: The headers of the request that are used for the signature.
+  /// - Throws: When the signature cannot be created.
   init(algorithm: Algorithm, keyID: String, path: String, method: String, headers: KeyValuePairs<String, String>) throws {
     let headers = Headers(headers)
     signingString = "(request-target): \(method.lowercased()) \(path)\n\(headers.entries)"
